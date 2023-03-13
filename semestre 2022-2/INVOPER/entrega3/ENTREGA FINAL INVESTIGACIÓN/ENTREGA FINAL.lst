@@ -1,0 +1,674 @@
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 10/10/22 00:31:54 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  SETS
+   2   
+   3  t periodos      /Mar,Abr,May,Jun,Jul,Ago,Sep,Oct,Nov,Dic/
+   4  l niveles       /1,2,3,4/;
+   5   
+   6  PARAMETERS
+   7   
+   8  d(t) La demanda pronosticada en cada periodo en Giga-Btu para cada periodo
+   9   
+  10  /Mar    517
+  11  Abr     339
+  12  May     209
+  13  Jun     396
+  14  Jul     476
+  15  Ago     531
+  16  Sep     807
+  17  Oct     956
+  18  Nov     1000
+  19  Dic     1195/
+  20   
+  21  b(t) La produccion pronosticada en cada periodo en G-Btu para cada periodo
+  22   
+  23  /Mar    699
+  24  Abr     700
+  25  May     602
+  26  Jun     301
+  27  Jul     692
+  28  Ago     690
+  29  Sep     414
+  30  Oct     896
+  31  Nov     897
+  32  Dic     907/
+  33   
+  34   
+  35  p(t) El costo de iniciar de la producción en dólares para los meses del 2016
+  36   
+  37  /Mar    1000
+  38  Abr     1300
+  39  May     1300
+  40  Jun     1700
+  41  Jul     1200
+  42  Ago     1200
+  43  Sep     1400
+  44  Oct     1000
+  45  Nov     900
+  46  Dic     900/;
+  47   
+  48  TABLE
+  49   
+  50  h(t,l) El costo de sostenimiento inventarial por un periodo en cada nivel en dólares por G-BTU para 2016
+  51   
+  52            1    2    3      4
+  53   
+  54   Mar      1    1.5  1      2
+  55   Abr      1    1.5  1      2
+  56   May      1.3  1.5  1      2
+  57   Jun      1.3  1.5  1      2
+  58   Jul      1.3  1.5  1.2    2
+  59   Ago      1.3  1.5  1.2    2
+  60   Sep      1.3  1.5  1.2    2
+  61   Oct      2    1.5  1.2    2
+  62   Nov      2    1.5  1.2    2
+  63   Dic      2    1.5  1.2    2
+  64   ;
+  65   
+  66   
+  67  TABLE
+  68   
+  69  c(t,l) El costo de transporte en cada nivel en dólares por G-BTU para el 2016
+  70   
+  71              1      2     3
+  72   
+  73   Mar        1     1.5    3
+  74   Abr        1     1.5    3
+  75   May        1     1.5    3
+  76   Jun        1     1.5    3
+  77   Jul        1     1.5    3
+  78   Ago        1     1.5    3
+  79   Sep        1     1.5    3
+  80   Oct        1.2   1.8    3
+  81   Nov        1.2   1.8    3
+  82   Dic        1.2   1.8    3;
+  83   
+  84   
+  85  VARIABLES
+  86   
+  87  y(t) Cantidad de gas natural (Giga BTU) a producir en el periodo t
+  88  x(t,l) Cantidad de gas natural (Giga BTU) a enviar desde el nivel  l al nivel  l+1 en el periodo t
+  89  I(t,l) Cantidad de gas natural (Giga BTU) a almacenar en el nivel l al final del periodo t
+  90  z Función objetivo: Costo total de transporte;
+  91   
+  92  POSITIVE VARIABLE
+  93   
+  94  y,x,I;
+  95   
+  96   
+  97  EQUATIONS
+  98   
+  99  objetivo Valor de la función objetivo
+ 100  entrada Balance de entrada
+ 101  inventario1 Balance de inventario
+ 102  inventario2 Balance de inventario
+ 103  salida Balance de salida
+ 104  produccion Capacidad de producción;
+ 105   
+ 106  objetivo.. z=E= sum(t,p(t)*y(t))+sum(t,sum(l,c(t,l-1)*x(t,l-1)))+sum(t,sum(l,h(t,l)*I(t,l)));
+ 107  entrada(t,l).. x(t,'1')+I(t,'1') =e= y(t)+I(t-1,'1');
+ 108  inventario1(t,l).. x(t,'2')+I(t,'2') =e= x(t,'1')+I(t-1,'2');
+ 109  inventario2(t,l).. x(t,'3')+I(t,'3') =e= x(t,'2')+I(t-1,'3');
+ 110  salida(t,l).. (d(t)+ I(t,'4'))=e=(x(t,'3')+I(t-1,'4'));
+ 111  produccion(t).. y(t)=l=b(t);
+ 112   
+ 113   
+ 114  MODEL   Modelo  /All/;
+ 115  SOLVE   Modelo  USING   LP      MINIMIZING      z;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 10/10/22 00:31:54 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE Modelo Using LP From line 115
+
+
+---- objetivo  =E=  Valor de la función objetivo
+
+objetivo..  - 1000*y(Mar) - 1300*y(Abr) - 1300*y(May) - 1700*y(Jun) - 1200*y(Jul) - 1200*y(Ago) - 1400*y(Sep) - 1000*y(Oct) - 900*y(Nov) - 900*y(Dic) - x(Mar,1) - 1.5*x(Mar,2) - 3*x(Mar,3) - x(Abr,1) - 1.5*x(Abr,2) - 3*x(Abr,3) - x(May,1) - 1.5*x(May,2) - 3*x(May,3) - x(Jun,1) - 1.5*x(Jun,2) - 3*x(Jun,3) - x(Jul,1) - 1.5*x(Jul,2) - 3*x(Jul,3) - x(Ago,1) - 1.5*x(Ago,2) - 3*x(Ago,3) - x(Sep,1) - 1.5*x(Sep,2) - 3*x(Sep,3) - 1.2*x(Oct,1) - 1.8*x(Oct,2) - 3*x(Oct,3) - 1.2*x(Nov,1) - 1.8*x(Nov,2) - 3*x(Nov,3) - 1.2*x(Dic,1) - 1.8*x(Dic,2) - 3*x(Dic,3) - I(Mar,1) - 1.5*I(Mar,2) - I(Mar,3) - 2*I(Mar,4) - I(Abr,1) - 1.5*I(Abr,2) - I(Abr,3) - 2*I(Abr,4) - 1.3*I(May,1) - 1.5*I(May,2) - I(May,3) - 2*I(May,4) - 1.3*I(Jun,1) - 1.5*I(Jun,2) - I(Jun,3) - 2*I(Jun,4) - 1.3*I(Jul,1) - 1.5*I(Jul,2) - 1.2*I(Jul,3) - 2*I(Jul,4) - 1.3*I(Ago,1) - 1.5*I(Ago,2) - 1.2*I(Ago,3) - 2*I(Ago,4) - 1.3*I(Sep,1) - 1.5*I(Sep,2) - 1.2*I(Sep,3) - 2*I(Sep,4) - 2*I(Oct,1) - 1.5*I(Oct,2) - 1.2*I(Oct,3) - 2*I(Oct,4) - 2*I(Nov,1) - 1.5*I(Nov,2) - 1.2*I(Nov,3) - 2*I(Nov,4) - 2*I(Dic,1) - 1.5*I(Dic,2) - 1.2*I(Dic,3) - 2*I(Dic,4) + z =E= 0 ; (LHS = 0)
+     
+
+---- entrada  =E=  Balance de entrada
+
+entrada(Mar,1)..  - y(Mar) + x(Mar,1) + I(Mar,1) =E= 0 ; (LHS = 0)
+     
+entrada(Mar,2)..  - y(Mar) + x(Mar,1) + I(Mar,1) =E= 0 ; (LHS = 0)
+     
+entrada(Mar,3)..  - y(Mar) + x(Mar,1) + I(Mar,1) =E= 0 ; (LHS = 0)
+     
+REMAINING 37 ENTRIES SKIPPED
+
+
+---- inventario1  =E=  Balance de inventario
+
+inventario1(Mar,1)..  - x(Mar,1) + x(Mar,2) + I(Mar,2) =E= 0 ; (LHS = 0)
+     
+inventario1(Mar,2)..  - x(Mar,1) + x(Mar,2) + I(Mar,2) =E= 0 ; (LHS = 0)
+     
+inventario1(Mar,3)..  - x(Mar,1) + x(Mar,2) + I(Mar,2) =E= 0 ; (LHS = 0)
+     
+REMAINING 37 ENTRIES SKIPPED
+
+
+---- inventario2  =E=  Balance de inventario
+
+inventario2(Mar,1)..  - x(Mar,2) + x(Mar,3) + I(Mar,3) =E= 0 ; (LHS = 0)
+     
+inventario2(Mar,2)..  - x(Mar,2) + x(Mar,3) + I(Mar,3) =E= 0 ; (LHS = 0)
+     
+inventario2(Mar,3)..  - x(Mar,2) + x(Mar,3) + I(Mar,3) =E= 0 ; (LHS = 0)
+     
+REMAINING 37 ENTRIES SKIPPED
+
+
+---- salida  =E=  Balance de salida
+
+salida(Mar,1)..  - x(Mar,3) + I(Mar,4) =E= -517 ; (LHS = 0, INFES = 517 ****)
+     
+salida(Mar,2)..  - x(Mar,3) + I(Mar,4) =E= -517 ; (LHS = 0, INFES = 517 ****)
+     
+salida(Mar,3)..  - x(Mar,3) + I(Mar,4) =E= -517 ; (LHS = 0, INFES = 517 ****)
+     
+REMAINING 37 ENTRIES SKIPPED
+
+
+---- produccion  =L=  Capacidad de producción
+
+produccion(Mar)..  y(Mar) =L= 699 ; (LHS = 0)
+     
+produccion(Abr)..  y(Abr) =L= 700 ; (LHS = 0)
+     
+produccion(May)..  y(May) =L= 602 ; (LHS = 0)
+     
+REMAINING 7 ENTRIES SKIPPED
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 10/10/22 00:31:54 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE Modelo Using LP From line 115
+
+
+---- y  Cantidad de gas natural (Giga BTU) a producir en el periodo t
+
+y(Mar)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -1000       objetivo
+       -1       entrada(Mar,1)
+       -1       entrada(Mar,2)
+       -1       entrada(Mar,3)
+       -1       entrada(Mar,4)
+        1       produccion(Mar)
+
+y(Abr)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -1300       objetivo
+       -1       entrada(Abr,1)
+       -1       entrada(Abr,2)
+       -1       entrada(Abr,3)
+       -1       entrada(Abr,4)
+        1       produccion(Abr)
+
+y(May)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+    -1300       objetivo
+       -1       entrada(May,1)
+       -1       entrada(May,2)
+       -1       entrada(May,3)
+       -1       entrada(May,4)
+        1       produccion(May)
+
+REMAINING 7 ENTRIES SKIPPED
+
+---- x  Cantidad de gas natural (Giga BTU) a enviar desde el nivel  l al nivel  l+1 en el periodo t
+
+x(Mar,1)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1       objetivo
+        1       entrada(Mar,1)
+        1       entrada(Mar,2)
+        1       entrada(Mar,3)
+        1       entrada(Mar,4)
+       -1       inventario1(Mar,1)
+       -1       inventario1(Mar,2)
+       -1       inventario1(Mar,3)
+       -1       inventario1(Mar,4)
+
+x(Mar,2)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1.5     objetivo
+        1       inventario1(Mar,1)
+        1       inventario1(Mar,2)
+        1       inventario1(Mar,3)
+        1       inventario1(Mar,4)
+       -1       inventario2(Mar,1)
+       -1       inventario2(Mar,2)
+       -1       inventario2(Mar,3)
+       -1       inventario2(Mar,4)
+
+x(Mar,3)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -3       objetivo
+        1       inventario2(Mar,1)
+        1       inventario2(Mar,2)
+        1       inventario2(Mar,3)
+        1       inventario2(Mar,4)
+       -1       salida(Mar,1)
+       -1       salida(Mar,2)
+       -1       salida(Mar,3)
+       -1       salida(Mar,4)
+
+REMAINING 27 ENTRIES SKIPPED
+
+---- I  Cantidad de gas natural (Giga BTU) a almacenar en el nivel l al final del periodo t
+
+I(Mar,1)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1       objetivo
+        1       entrada(Mar,1)
+        1       entrada(Mar,2)
+        1       entrada(Mar,3)
+        1       entrada(Mar,4)
+       -1       entrada(Abr,1)
+       -1       entrada(Abr,2)
+       -1       entrada(Abr,3)
+       -1       entrada(Abr,4)
+
+I(Mar,2)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1.5     objetivo
+        1       inventario1(Mar,1)
+        1       inventario1(Mar,2)
+        1       inventario1(Mar,3)
+        1       inventario1(Mar,4)
+       -1       inventario1(Abr,1)
+       -1       inventario1(Abr,2)
+       -1       inventario1(Abr,3)
+       -1       inventario1(Abr,4)
+
+I(Mar,3)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -1       objetivo
+        1       inventario2(Mar,1)
+        1       inventario2(Mar,2)
+        1       inventario2(Mar,3)
+        1       inventario2(Mar,4)
+       -1       inventario2(Abr,1)
+       -1       inventario2(Abr,2)
+       -1       inventario2(Abr,3)
+       -1       inventario2(Abr,4)
+
+REMAINING 37 ENTRIES SKIPPED
+
+---- z  Función objetivo: Costo total de transporte
+
+z
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       objetivo
+
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 10/10/22 00:31:54 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE Modelo Using LP From line 115
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS          171
+BLOCKS OF VARIABLES           4     SINGLE VARIABLES           81
+NON ZERO ELEMENTS           675
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+GAMS 36.2.0  r433180e Released Sep  3, 2021 WEX-WEI x86 64bit/MS Windows - 10/10/22 00:31:54 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE Modelo Using LP From line 115
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   Modelo              OBJECTIVE  z
+     TYPE    LP                  DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  115
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE          7092055.2000
+
+ RESOURCE USAGE, LIMIT          0.016 10000000000.000
+ ITERATION COUNT, LIMIT        45    2147483647
+--- *** This solver runs with a demo license. No commercial use.
+--- GMO setup time: 0.00s
+--- GMO memory 0.53 Mb (peak 0.53 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 20.1.0.1 link memory 0.00 Mb (peak 0.02 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.27 ticks)
+
+
+Optimal solution found
+Objective:      7092055.200000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU objetivo            .              .              .             1.0000      
+
+  objetivo  Valor de la función objetivo
+
+---- EQU entrada  Balance de entrada
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1          .              .              .         -1393.6000      
+Mar.2          .              .              .              .          
+Mar.3          .              .              .              .          
+Mar.4          .              .              .              .          
+Abr.1          .              .              .         -1394.6000      
+Abr.2          .              .              .              .          
+Abr.3          .              .              .              .          
+Abr.4          .              .              .              .          
+May.1          .              .              .              .          
+May.2          .              .              .              .          
+May.3          .              .              .              .          
+May.4          .              .              .         -1395.6000      
+Jun.1          .              .              .              .          
+Jun.2          .              .              .              .          
+Jun.3          .              .              .              .          
+Jun.4          .              .              .         -1396.6000      
+Jul.1          .              .              .              .          
+Jul.2          .              .              .              .          
+Jul.3          .              .              .              .          
+Jul.4          .              .              .         -1397.6000      
+Ago.1          .              .              .              .          
+Ago.2          .              .              .         -1398.8000      
+Ago.3          .              .              .              .          
+Ago.4          .              .              .              .          
+Sep.1          .              .              .         -1400.0000      
+Sep.2          .              .              .              .          
+Sep.3          .              .              .              .          
+Sep.4          .              .              .              .          
+Oct.1          .              .              .              .          
+Oct.2          .              .              .         -1400.7000      
+Oct.3          .              .              .              .          
+Oct.4          .              .              .              .          
+Nov.1          .              .              .         -1401.9000      
+Nov.2          .              .              .              .          
+Nov.3          .              .              .              .          
+Nov.4          .              .              .              .          
+Dic.1          .              .              .              .          
+Dic.2          .              .              .              .          
+Dic.3          .              .              .         -1403.1000      
+Dic.4          .              .              .              .          
+
+---- EQU inventario1  Balance de inventario
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1          .              .              .         -1394.6000      
+Mar.2          .              .              .              .          
+Mar.3          .              .              .              .          
+Mar.4          .              .              .              .          
+Abr.1          .              .              .              .          
+Abr.2          .              .              .         -1395.6000      
+Abr.3          .              .              .              .          
+Abr.4          .              .              .              .          
+May.1          .              .              .              .          
+May.2          .              .              .              .          
+May.3          .              .              .              .          
+May.4          .              .              .         -1396.6000      
+Jun.1          .              .              .         -1397.6000      
+Jun.2          .              .              .              .          
+Jun.3          .              .              .              .          
+Jun.4          .              .              .              .          
+Jul.1          .              .              .              .          
+Jul.2          .              .              .              .          
+Jul.3          .              .              .         -1398.6000      
+Jul.4          .              .              .              .          
+Ago.1          .              .              .              .          
+Ago.2          .              .              .              .          
+Ago.3          .              .              .              .          
+Ago.4          .              .              .         -1399.8000      
+Sep.1          .              .              .              .          
+Sep.2          .              .              .         -1401.0000      
+Sep.3          .              .              .              .          
+Sep.4          .              .              .              .          
+Oct.1          .              .              .              .          
+Oct.2          .              .              .              .          
+Oct.3          .              .              .              .          
+Oct.4          .              .              .         -1401.9000      
+Nov.1          .              .              .         -1403.1000      
+Nov.2          .              .              .              .          
+Nov.3          .              .              .              .          
+Nov.4          .              .              .              .          
+Dic.1          .              .              .              .          
+Dic.2          .              .              .              .          
+Dic.3          .              .              .              .          
+Dic.4          .              .              .         -1404.3000      
+
+---- EQU inventario2  Balance de inventario
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1          .              .              .         -1396.1000      
+Mar.2          .              .              .              .          
+Mar.3          .              .              .              .          
+Mar.4          .              .              .              .          
+Abr.1          .              .              .              .          
+Abr.2          .              .              .              .          
+Abr.3          .              .              .              .          
+Abr.4          .              .              .         -1397.1000      
+May.1          .              .              .              .          
+May.2          .              .              .              .          
+May.3          .              .              .              .          
+May.4          .              .              .         -1398.1000      
+Jun.1          .              .              .              .          
+Jun.2          .              .              .              .          
+Jun.3          .              .              .              .          
+Jun.4          .              .              .         -1399.1000      
+Jul.1          .              .              .              .          
+Jul.2          .              .              .              .          
+Jul.3          .              .              .         -1400.1000      
+Jul.4          .              .              .              .          
+Ago.1          .              .              .         -1401.3000      
+Ago.2          .              .              .              .          
+Ago.3          .              .              .              .          
+Ago.4          .              .              .              .          
+Sep.1          .              .              .              .          
+Sep.2          .              .              .              .          
+Sep.3          .              .              .              .          
+Sep.4          .              .              .         -1402.5000      
+Oct.1          .              .              .         -1403.7000      
+Oct.2          .              .              .              .          
+Oct.3          .              .              .              .          
+Oct.4          .              .              .              .          
+Nov.1          .              .              .              .          
+Nov.2          .              .              .         -1404.9000      
+Nov.3          .              .              .              .          
+Nov.4          .              .              .              .          
+Dic.1          .              .              .         -1406.1000      
+Dic.2          .              .              .              .          
+Dic.3          .              .              .              .          
+Dic.4          .              .              .              .          
+
+---- EQU salida  Balance de salida
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1      -517.0000      -517.0000      -517.0000     -1399.1000      
+Mar.2      -517.0000      -517.0000      -517.0000          .          
+Mar.3      -517.0000      -517.0000      -517.0000          .          
+Mar.4      -517.0000      -517.0000      -517.0000          .          
+Abr.1      -339.0000      -339.0000      -339.0000     -1400.1000      
+Abr.2      -339.0000      -339.0000      -339.0000          .          
+Abr.3      -339.0000      -339.0000      -339.0000          .          
+Abr.4      -339.0000      -339.0000      -339.0000          .          
+May.1      -209.0000      -209.0000      -209.0000     -1401.1000      
+May.2      -209.0000      -209.0000      -209.0000          .          
+May.3      -209.0000      -209.0000      -209.0000          .          
+May.4      -209.0000      -209.0000      -209.0000          .          
+Jun.1      -396.0000      -396.0000      -396.0000     -1402.1000      
+Jun.2      -396.0000      -396.0000      -396.0000          .          
+Jun.3      -396.0000      -396.0000      -396.0000          .          
+Jun.4      -396.0000      -396.0000      -396.0000          .          
+Jul.1      -476.0000      -476.0000      -476.0000     -1403.1000      
+Jul.2      -476.0000      -476.0000      -476.0000          .          
+Jul.3      -476.0000      -476.0000      -476.0000          .          
+Jul.4      -476.0000      -476.0000      -476.0000          .          
+Ago.1      -531.0000      -531.0000      -531.0000     -1404.3000      
+Ago.2      -531.0000      -531.0000      -531.0000          .          
+Ago.3      -531.0000      -531.0000      -531.0000          .          
+Ago.4      -531.0000      -531.0000      -531.0000          .          
+Sep.1      -807.0000      -807.0000      -807.0000     -1405.5000      
+Sep.2      -807.0000      -807.0000      -807.0000          .          
+Sep.3      -807.0000      -807.0000      -807.0000          .          
+Sep.4      -807.0000      -807.0000      -807.0000          .          
+Oct.1      -956.0000      -956.0000      -956.0000     -1406.7000      
+Oct.2      -956.0000      -956.0000      -956.0000          .          
+Oct.3      -956.0000      -956.0000      -956.0000          .          
+Oct.4      -956.0000      -956.0000      -956.0000          .          
+Nov.1     -1000.0000     -1000.0000     -1000.0000     -1407.9000      
+Nov.2     -1000.0000     -1000.0000     -1000.0000          .          
+Nov.3     -1000.0000     -1000.0000     -1000.0000          .          
+Nov.4     -1000.0000     -1000.0000     -1000.0000          .          
+Dic.1     -1195.0000     -1195.0000     -1195.0000     -1409.1000      
+Dic.2     -1195.0000     -1195.0000     -1195.0000          .          
+Dic.3     -1195.0000     -1195.0000     -1195.0000          .          
+Dic.4     -1195.0000     -1195.0000     -1195.0000          .          
+
+---- EQU produccion  Capacidad de producción
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+Mar        -INF          699.0000       699.0000      -393.6000      
+Abr        -INF          700.0000       700.0000       -94.6000      
+May        -INF          602.0000       602.0000       -95.6000      
+Jun        -INF             .           301.0000          .          
+Jul        -INF          692.0000       692.0000      -197.6000      
+Ago        -INF          690.0000       690.0000      -198.8000      
+Sep        -INF          343.0000       414.0000          .          
+Oct        -INF          896.0000       896.0000      -400.7000      
+Nov        -INF          897.0000       897.0000      -501.9000      
+Dic        -INF          907.0000       907.0000      -503.1000      
+
+---- VAR y  Cantidad de gas natural (Giga BTU) a producir en el periodo t
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+Mar          .           699.0000        +INF             .          
+Abr          .           700.0000        +INF             .          
+May          .           602.0000        +INF             .          
+Jun          .              .            +INF          303.4000      
+Jul          .           692.0000        +INF             .          
+Ago          .           690.0000        +INF             .          
+Sep          .           343.0000        +INF             .          
+Oct          .           896.0000        +INF             .          
+Nov          .           897.0000        +INF             .          
+Dic          .           907.0000        +INF             .          
+
+---- VAR x  Cantidad de gas natural (Giga BTU) a enviar desde el nivel  l al nivel  l+1 en el periodo t
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1          .           517.0000        +INF             .          
+Mar.2          .           517.0000        +INF             .          
+Mar.3          .           517.0000        +INF             .          
+Abr.1          .           882.0000        +INF             .          
+Abr.2          .           882.0000        +INF             .          
+Abr.3          .           339.0000        +INF             .          
+May.1          .           602.0000        +INF             .          
+May.2          .           602.0000        +INF             .          
+May.3          .           209.0000        +INF             .          
+Jun.1          .              .            +INF             .          
+Jun.2          .              .            +INF             .          
+Jun.3          .           396.0000        +INF             .          
+Jul.1          .           692.0000        +INF             .          
+Jul.2          .           692.0000        +INF             .          
+Jul.3          .           476.0000        +INF             .          
+Ago.1          .           690.0000        +INF             .          
+Ago.2          .           690.0000        +INF             .          
+Ago.3          .           531.0000        +INF             .          
+Sep.1          .           343.0000        +INF             .          
+Sep.2          .           343.0000        +INF             .          
+Sep.3          .           807.0000        +INF             .          
+Oct.1          .           896.0000        +INF             .          
+Oct.2          .           896.0000        +INF             .          
+Oct.3          .           956.0000        +INF             .          
+Nov.1          .           897.0000        +INF             .          
+Nov.2          .           897.0000        +INF             .          
+Nov.3          .          1000.0000        +INF             .          
+Dic.1          .           907.0000        +INF             .          
+Dic.2          .           907.0000        +INF             .          
+Dic.3          .          1195.0000        +INF             .          
+
+---- VAR I  Cantidad de gas natural (Giga BTU) a almacenar en el nivel l al final del periodo t
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Mar.1          .           182.0000        +INF             .          
+Mar.2          .              .            +INF            0.5000      
+Mar.3          .              .            +INF            EPS         
+Mar.4          .              .            +INF            1.0000      
+Abr.1          .              .            +INF            EPS         
+Abr.2          .              .            +INF            0.5000      
+Abr.3          .           543.0000        +INF             .          
+Abr.4          .              .            +INF            1.0000      
+May.1          .              .            +INF            0.3000      
+May.2          .              .            +INF            0.5000      
+May.3          .           936.0000        +INF             .          
+May.4          .              .            +INF            1.0000      
+Jun.1          .              .            +INF            0.3000      
+Jun.2          .              .            +INF            0.5000      
+Jun.3          .           540.0000        +INF             .          
+Jun.4          .              .            +INF            1.0000      
+Jul.1          .              .            +INF            0.1000      
+Jul.2          .              .            +INF            0.3000      
+Jul.3          .           756.0000        +INF             .          
+Jul.4          .              .            +INF            0.8000      
+Ago.1          .              .            +INF            0.1000      
+Ago.2          .              .            +INF            0.3000      
+Ago.3          .           915.0000        +INF             .          
+Ago.4          .              .            +INF            0.8000      
+Sep.1          .              .            +INF            0.6000      
+Sep.2          .              .            +INF            0.6000      
+Sep.3          .           451.0000        +INF             .          
+Sep.4          .              .            +INF            0.8000      
+Oct.1          .              .            +INF            0.8000      
+Oct.2          .              .            +INF            0.3000      
+Oct.3          .           391.0000        +INF             .          
+Oct.4          .              .            +INF            0.8000      
+Nov.1          .              .            +INF            0.8000      
+Nov.2          .              .            +INF            0.3000      
+Nov.3          .           288.0000        +INF             .          
+Nov.4          .              .            +INF            0.8000      
+Dic.1          .              .            +INF         1405.1000      
+Dic.2          .              .            +INF         1405.8000      
+Dic.3          .              .            +INF         1407.3000      
+Dic.4          .              .            +INF         1411.1000      
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR z                 -INF      7092055.2000        +INF             .          
+
+  z  Función objetivo: Costo total de transporte
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.047 SECONDS      4 MB  36.2.0 r433180e WEX-WEI
+
+
+USER: GAMS Demo license for Jeferson Alexis Prada NarG211017|0002CO-GEN
+      UIS, Colombia                                            DL051430
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\jefer\Dropbox\PC\Desktop\TRABAJOS\SEMESTRE II 2022\INV DE OPERACIONES\Entrega 3\Franklin\CAL 267\CAL 267.gms
+Output     C:\Users\jefer\Dropbox\PC\Desktop\TRABAJOS\SEMESTRE II 2022\INV DE OPERACIONES\Entrega 3\Franklin\CAL 267\CAL 267.lst

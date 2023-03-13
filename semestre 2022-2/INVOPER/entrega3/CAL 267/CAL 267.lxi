@@ -1,0 +1,25 @@
+B 3 C o m p i l a t i o n
+B 126 Equation Listing    SOLVE Modelo Using LP From line 115
+D 129 objetivo
+D 134 entrada
+D 145 inventario1
+D 156 inventario2
+D 167 salida
+D 178 produccion
+B 190 Column Listing      SOLVE Modelo Using LP From line 115
+E 193 y
+E 224 x
+E 264 I
+E 304 z
+B 312 Model Statistics    SOLVE Modelo Using LP From line 115
+B 325 Solution Report     SOLVE Modelo Using LP From line 115
+F 358 objetivo
+F 362 entrada
+F 407 inventario1
+F 452 inventario2
+F 497 salida
+F 542 produccion
+G 557 y
+G 572 x
+G 607 I
+G 654 z

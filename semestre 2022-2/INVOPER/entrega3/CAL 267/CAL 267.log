@@ -1,0 +1,62 @@
+
+--- Job CAL 267.gms Start 10/10/22 00:31:54 36.2.0 r433180e WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\36\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input "C:\Users\jefer\Dropbox\PC\Desktop\TRABAJOS\SEMESTRE II 2022\INV DE OPERACIONES\Entrega 3\Franklin\CAL 267\CAL 267.gms"
+    PageSize 0
+    ScrDir "C:\Users\jefer\Dropbox\PC\Desktop\TRABAJOS\SEMESTRE II 2022\INV DE OPERACIONES\Entrega 3\Franklin\CAL 267\225a\"
+    SysDir C:\GAMS\36\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: GAMS Demo license for Jeferson Alexis Prada NarG211017|0002CO-GEN
+          UIS, Colombia                                            DL051430
+          C:\GAMS\36\gamslice.txt
+          jeferprada@gmail.com, Jeferson Alexis Prada Naranjo              
+          Demo license for demonstration and instructional purposes only
+Processor information: 1 socket(s), 4 core(s), and 8 thread(s) available
+GAMS 36.2.0   Copyright (C) 1987-2021 GAMS Development. All rights reserved
+--- Starting compilation
+--- CAL 267.gms(115) 3 Mb
+--- Starting execution: elapsed 0:00:00.011
+--- Generating LP model Modelo
+--- CAL 267.gms(115) 4 Mb
+---   171 rows  81 columns  675 non-zeroes
+--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.016
+
+IBM ILOG CPLEX   36.2.0 r433180e Released Sep 03, 2021 WEI x86 64bit/MS Window
+
+--- *** This solver runs with a demo license. No commercial use.
+--- GMO setup time: 0.00s
+--- GMO memory 0.53 Mb (peak 0.53 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 20.1.0.1 link memory 0.00 Mb (peak 0.02 Mb)
+--- Starting Cplex
+
+Version identifier: 20.1.0.1 | 2021-04-07 | 3a818710c
+CPXPARAM_Advance                                 0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Tried aggregator 1 time.
+LP Presolve eliminated 130 rows and 1 columns.
+Aggregator did 3 substitutions.
+Reduced LP has 37 rows, 77 columns, and 140 nonzeros.
+Presolve time = 0.00 sec. (0.10 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          5233.500000
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.27 ticks)
+
+
+Optimal solution found
+Objective:      7092055.200000
+
+--- Reading solution for model Modelo
+*** Status: Normal completion
+--- Job CAL 267.gms Stop 10/10/22 00:31:54 elapsed 0:00:00.062
